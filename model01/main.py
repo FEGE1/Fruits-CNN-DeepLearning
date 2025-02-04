@@ -41,3 +41,43 @@ model.compile(loss='categorical_crossentropy',
 batch_size = 32 # her iterasyonda 32 tane resim train edilecek
 
 model.summary()
+
+# Data Generation - Train - Test
+Train_Datagen = ImageDataGenerator(rescale= 1./255, # rgb 0-255 arasında
+                   shear_range= 0.3, #rastgele resmi sağa veya sola çevirme
+                   horizontal_flip= True,
+                   zoom_range= 0.3)
+
+Test_Datagen = ImageDataGenerator(rescale= 1./255)
+
+
+
+Train_Generator = Train_Datagen.flow_from_directory(train_path,                 
+                                                    target_size= (100, 100),
+                                                    batch_size= batch_size,
+                                                    color_mode= 'rgb',
+                                                    class_mode= 'categorical') # Belli bir kalıba uygunsa classları ve içindekileri otomatik okuma
+
+Test_Generator = Train_Datagen.flow_from_directory(test_path,                 
+                                                    target_size= (100, 100),
+                                                    batch_size= batch_size,
+                                                    color_mode= 'rgb',
+                                                    class_mode= 'categorical')
+
+hist = model.fit(
+    Train_Generator,
+    steps_per_epoch= 1600 // batch_size, # Yukarıda generator kısmında kaç tane resim üreticeğinin belirtmemiştik, 1600 tane resim lazım olarak belirledik 
+    epochs= 2,
+    validation_data= Test_Generator,
+    validation_steps= 800 // batch_size
+)
+
+model.save_weights('deneme.weights.h5')
+
+print(hist.history.keys())
+plt.plot(hist.history['loss'], label = 'Train Loss')
+plt.plot(hist.history['val_loss'], label = 'Validation Loss')
+plt.plot(hist.history['acc'], label = 'Train acc')
+plt.plot(hist.history['val_acc'], label = 'Validation acc')
+plt.legend()
+plt.show()
