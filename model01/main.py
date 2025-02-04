@@ -5,6 +5,10 @@ import matplotlib.pyplot as plt
 from glob import glob
 from pathlib import Path
 import os
+from datetime import datetime
+import time
+import json
+import codecs
 
 DATA_SETS_DIR = os.path.join(Path(__file__).resolve().parent.parent,'fruits_dataset/fruits-360_dataset_100x100/fruits-360')
 
@@ -12,7 +16,7 @@ train_path = os.path.join(DATA_SETS_DIR,'Training')
 test_path = os.path.join(DATA_SETS_DIR,'Test')
 
 model = Sequential([
-    Input(shape=(100, 100, 3)),  # ✅ input_shape yerine Input() kullanılıyor
+    Input(shape=(100, 100, 3)),
     Conv2D(32, (3, 3)),
     Activation('relu'),
     MaxPooling2D(),
@@ -64,20 +68,31 @@ Test_Generator = Train_Datagen.flow_from_directory(test_path,
                                                     color_mode= 'rgb',
                                                     class_mode= 'categorical')
 
+# HIST
 hist = model.fit(
     Train_Generator,
     steps_per_epoch= 1600 // batch_size, # Yukarıda generator kısmında kaç tane resim üreticeğinin belirtmemiştik, 1600 tane resim lazım olarak belirledik 
-    epochs= 2,
+    epochs= 100,
     validation_data= Test_Generator,
     validation_steps= 800 // batch_size
 )
 
-model.save_weights('deneme.weights.h5')
+time.sleep(1)
+
+# Save Model
+date = datetime.today()
+date = str(date.day)+"-"+str(date.month)+"-"+str(date.year)+"-"+str(date.hour)+":"+str(date.minute)+":"+str(date.second)
+
+model.save_weights('model_saves/model-{}.weights.h5'.format(date))
+
+# Save Accuracy - Loss with Json
+with open("model_saves/model-{}.json".format(date),"w") as f:
+    json.dump(hist.history, f)
 
 print(hist.history.keys())
 plt.plot(hist.history['loss'], label = 'Train Loss')
 plt.plot(hist.history['val_loss'], label = 'Validation Loss')
-plt.plot(hist.history['acc'], label = 'Train acc')
-plt.plot(hist.history['val_acc'], label = 'Validation acc')
+plt.plot(hist.history['accuracy'], label = 'Train acc')
+plt.plot(hist.history['val_accuracy'], label = 'Validation acc')
 plt.legend()
 plt.show()
