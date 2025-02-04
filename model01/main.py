@@ -92,6 +92,7 @@ with open("model_saves/model-{}.json".format(date),"w") as f:
 print(hist.history.keys())
 plt.plot(hist.history['loss'], label = 'Train Loss')
 plt.plot(hist.history['val_loss'], label = 'Validation Loss')
+plt.figure()
 plt.plot(hist.history['accuracy'], label = 'Train acc')
 plt.plot(hist.history['val_accuracy'], label = 'Validation acc')
 plt.legend()
