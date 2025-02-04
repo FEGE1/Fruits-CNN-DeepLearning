@@ -47,7 +47,7 @@ batch_size = 32 # her iterasyonda 32 tane resim train edilecek
 model.summary()
 
 # Data Generation - Train - Test
-Train_Datagen = ImageDataGenerator(rescale= 1./255, # rgb 0-255 arasında
+Train_Datagen = ImageDataGenerator(rescale= 1./255, # rgb 0-255 yerine 0-1 arasına alınarak normalizasyon yapılıyor
                    shear_range= 0.3, #rastgele resmi sağa veya sola çevirme
                    horizontal_flip= True,
                    zoom_range= 0.3)
