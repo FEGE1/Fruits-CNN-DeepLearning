@@ -11,30 +11,33 @@ DATA_SETS_DIR = os.path.join(Path(__file__).resolve().parent.parent,'fruits_data
 train_path = os.path.join(DATA_SETS_DIR,'Training')
 test_path = os.path.join(DATA_SETS_DIR,'Test')
 
-model = Sequential()
-model.add(Input(shape=(100,100,3)))
-model.add(Conv2D(32, (3,3)))
-model.add(Activation('relu'))
-model.add(MaxPooling2D())
+model = Sequential([
+    Input(shape=(100, 100, 3)),  # ✅ input_shape yerine Input() kullanılıyor
+    Conv2D(32, (3, 3)),
+    Activation('relu'),
+    MaxPooling2D(),
 
-model.add(Conv2D(32, (3,3)))
-model.add(Activation('relu'))
-model.add(MaxPooling2D())
+    Conv2D(32, (3, 3)),
+    Activation('relu'),
+    MaxPooling2D(),
 
-model.add(Conv2D(64, (3,3)))
-model.add(Activation('relu'))
-model.add(MaxPooling2D())
+    Conv2D(64, (3, 3)),
+    Activation('relu'),
+    MaxPooling2D(),
 
-model.add(Flatten())
-model.add(Dense(1024))
-model.add(Activation('relu'))
-model.add(Dropout(0.5))
+    Flatten(),
+    Dense(1024),
+    Activation('relu'),
+    Dropout(0.5),
 
-model.add(Dense(141)) #output = class sayısı
-model.add(Activation('softmax'))
+    Dense(141),  # output = class sayısı
+    Activation('softmax')
+])
 
 model.compile(loss='categorical_crossentropy',
               optimizer= 'rmsprop',
               metrics=["accuracy"])
 
 batch_size = 32 # her iterasyonda 32 tane resim train edilecek
+
+model.summary()
